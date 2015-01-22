@@ -271,9 +271,10 @@ void update_mode_oneiteration(MatrixXd rhs, MatrixXd C_old, MatrixXd B_old, Matr
 	
 	A_new = rhs * TobeInvert;
 }
-void tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
-	
+bool tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
+    bool fail;
 	MatrixXd A_random(MatrixXd::Random(KHID, KHID)); MatrixXd B_random(MatrixXd::Random(KHID, KHID)); MatrixXd C_random(MatrixXd::Random(KHID, KHID));
+    srand( (unsigned)time(NULL) );
 	A_random.setRandom(); B_random.setRandom(); C_random.setRandom();
 	HouseholderQR<MatrixXd> qr_A(A_random); HouseholderQR<MatrixXd> qr_B(B_random); HouseholderQR<MatrixXd> qr_C(C_random);
 	A_new = qr_A.householderQ(); MatrixXd B_new = qr_A.householderQ(); MatrixXd C_new = qr_A.householderQ();
@@ -281,35 +282,41 @@ void tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
 	long iteration = 1;
 	double error;
 	MatrixXd rhs(KHID, KHID);
+    MatrixXd T_est(T.rows(),T.cols());
 	while (true)
 	{
-		// update mode A
-		
-		Multip_KhatrioRao(T, C_old, B_old, rhs);
-		update_mode_oneiteration(rhs, C_old, B_old, A_new);
-		lambda = ((A_new.array().pow(2)).colwise().sum()).pow(1.0 / 2.0);
-		A_new = normc(A_new);
-		// convergence check
-		if (iteration < MINITER){}
-		else
-		{
-			error = (A_new - A_old).norm() / max(A_new.norm(), TOLERANCE);
-			cout << "err: " << error << endl;
-			if (error < 1e-4 || iteration > MAXITER)
-			{
-				cout << " coverged iteration: " << iteration << endl;
-				break;
-			}
-		}		
+        // update mode A
+        Multip_KhatrioRao(T, C_old, B_old, rhs);
+        update_mode_oneiteration(rhs, C_old, B_old, A_new);
+        
+        lambda = ((A_new.array().pow(2)).colwise().sum()).pow(1.0 / 2.0);
+        // convergence check
+        if (iteration > MINITER)
+        {
+            tensorReconstruct(T_est, A_new, B_new, C_new, lambda);
+            error = (T_est - T).norm() ;// max(T.norm(), TOLERANCE);            
+            if (error < 1e-4)
+            {
+                cout << "err: " << error << endl;
+                fail = 0;
+                break;
+            }
+            else
+                if (iteration > MAXITER)
+            {
+                fail = 1;
+                break;
+            }
+            
+        }
+        A_new = normc(A_new);
 		A_old = A_new;
 		// update mode B
-		
 		Multip_KhatrioRao(T, C_old, A_old, rhs);
 		update_mode_oneiteration(rhs, C_old, A_old, B_new);
 		B_new = normc(B_new);
 		B_old = B_new;
 		// update mode C
-		
 		Multip_KhatrioRao(T, B_old, A_old, rhs);
 		update_mode_oneiteration(rhs, B_old, A_old, C_new);
 		C_new = normc(C_new);
@@ -317,8 +324,27 @@ void tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
 		
 		iteration++;
 	}
+    return fail;
 }
 
+void tensorReconstruct(MatrixXd &T, MatrixXd A, MatrixXd B, MatrixXd C,VectorXd lambda){
+    if (B.cols() != C.cols()) {
+        //  printf("Error : Input matrices must have the same number of columns.");
+        fflush(stdout);
+        exit(1);
+    }
+    for (int i =0; i< lambda.size(); ++i){
+        lambda(i) = pow(lambda(i),1/3);
+    }
+    MatrixXd Lambda_diag = lambda.asDiagonal();
+    A =A * Lambda_diag;
+    B =B * Lambda_diag;
+    C =C * Lambda_diag;
+    MatrixXd output(B.rows()*C.rows(),B.cols());
+    KhatrioRao(C, B, output);
+    T = A*output.transpose();
+    
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void tensorDecom_alpha0_topic(SparseMatrix<double> D_a_mat, VectorXd D_a_mu, VectorXd Lengths, VectorXd &lambda, MatrixXd & phi_new)
 {

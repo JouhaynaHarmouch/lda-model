@@ -61,8 +61,8 @@ int main(int argc, const char * argv[])
 	MatrixXd input_M3(NA, NA * NA);
 	input_M3 = MatrixXd::Zero(NA, NA*NA);
 
-	input_M3 = read_G_sparse((char*) FILE_M3, "second order moment", NA, NA * NA);
-
+	input_M3 = read_G_sparse((char*) FILE_M3, "third order moment", NA, NA * NA);
+    cout << "input_tensor: " << endl << input_M3 << endl;
 	TIME_end = clock();
 	double time_readfile = double(TIME_end - TIME_start) / CLOCKS_PER_SEC;
 	printf("Exec Time reading matrices before preproc = %5.10e (Seconds)\n", time_readfile);
@@ -75,7 +75,14 @@ int main(int argc, const char * argv[])
 	VectorXd eigVal(KHID);
 	MatrixXd eigVect(KHID, KHID);
 
-	tensorDecom_batchALS(T, eigVal, eigVect);
+    bool fail=1;
+    int restart_num = 0;
+    while(fail and restart_num<10){
+        cout << "Running ALS " << restart_num << endl;
+        fail = tensorDecom_batchALS(T, eigVal, eigVect);
+        restart_num +=1;
+    }
+    
 
 	cout << "K space eigenvectors: " << endl << eigVect << endl;
 	cout << "K space eigenvalues: " << endl << eigVal << endl;
