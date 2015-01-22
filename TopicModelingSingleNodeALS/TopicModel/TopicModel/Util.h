@@ -21,8 +21,8 @@ void second_whiten_topic(SparseMatrix<double> Gx_a, \
 	SparseMatrix<double> &W, VectorXd &mu_a, SparseMatrix<double> &Uw, SparseMatrix<double> &diag_Lw_sqrt_inv_s, VectorXd &Lengths, bool M2_yes, SparseMatrix<double> &input_M2);
 void Compute_M3_topic(MatrixXd whitenedData, VectorXd whitenedMean, VectorXd Lengths, MatrixXd & Ta);
 void update_mode_oneiteration(MatrixXd rhs, MatrixXd C_old, MatrixXd B_old, MatrixXd &A_new);
-void tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new);
-
+bool tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new);
+void tensorReconstruct(MatrixXd &T, MatrixXd A, MatrixXd B, MatrixXd C,VectorXd lambda);
 void tensorDecom_alpha0_topic(SparseMatrix<double> D_a_mat, VectorXd D_a_mu, VectorXd Lengths, VectorXd &lambda, MatrixXd & phi_new);
 
 VectorXd tensor_form_orthcost_topic(double theta, MatrixXd curr_eigenmat, int curr_ind);
