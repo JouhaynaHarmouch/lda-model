@@ -43,3 +43,7 @@ Input Arguments:
 	// e.g. $(SolutionDir)datasets\synthetic\result\alpha.txt $(SolutionDir)datasets\synthetic\result\beta.txt $(SolutionDir)datasets\synthetic\result\hi.txt
 	//==============================================================================================================================================================
 
+
+#H1 Topic Modeling via Method of Moments
+
+This code performs learning and inference of topic modeles via method of moments using tensor decomposition on a single machine. Specifically the code first performs a pre-processing which implements a whitening transformation for matrix/tensor orthogonalisation and dimensionality reduction and then does "Alternating Least Squares (ALS)".
