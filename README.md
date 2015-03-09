@@ -44,6 +44,8 @@ Input Arguments:
 	//==============================================================================================================================================================
 
 
-#H1 Topic Modeling via Method of Moments
+#Topic Modeling via Method of Moments
 
 This code performs learning and inference of topic modeles via method of moments using tensor decomposition on a single machine. Specifically the code first performs a pre-processing which implements a whitening transformation for matrix/tensor orthogonalisation and dimensionality reduction and then does "Alternating Least Squares (ALS)".
+
+Now let us give a sketch of the method of moments approach to learning topic models. We consider the mixed membership (Latent Dirichlet Allocation)topic model. The that hidden topic proportions vector $\bf{h}\in \Delta^{k}$ is drawn from a Dirichlet distribution $\bf{h}\sim \text{Dir}(\alpha_1,\alpha_2,\ldots,\alpha_k)$, where $\alpha_0 : = \sum_{i\in[k]} {\alpha_i}$ is defined as the concentration parameter. $\bf{h}\in \Delta^{k}$, $\bf{h}\sim \text{Dir}(\alpha_1,\alpha_2,\ldots,\alpha_k)$,  $\alpha_0 : = \sum_{i\in[k]} {\alpha_i}$. Here memberships $h$ are not pure but mixed and the concentration parameter $\alpha_0$ controls to what extend the memberships are mixed.
