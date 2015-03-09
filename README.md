@@ -1,51 +1,5 @@
-TopicModeling
-=============
-
-Single node topic model learning and inference via method of moments using tensor decomposition. 
-Alternating least squares with pre-processing (a whitening step consists of orthogonalization and dimensionality reduction) is implemented. 
-
-Synthetic Data Generator: 
-		TopicModeling/SyntheticDataGenerator.m
-
-Data folder is: 
-		$(SolutionDir)\datasets\
-
-Input Arguments:
-
-//===============================================================================================================================================================
-	// User Manual: 
-	// (1) Data specs
-	InputArgument 1: NX is the training sample size
-	InputArgument 2: NX_test is the test sample size
-	InputArgument 3: NA is the vocabulary size
-	InputArgument 4: KHID is the number of topics you want to learn
-	InputArgument 5: alpha0 is the mixing parameter, usually set to < 1
-	InputArgument 6: DATATYPE denotes the index convention. 
-	// -> DATATYPE == 1 assumes MATLAB index which starts from 1,DATATYPE ==0 assumes C++ index which starts from 0 .
-	// e.g.  10000 100 500 3 0.01 1 
-	const char* FILE_GA = argv[7];
-	const char* FILE_GA_test = argv[8];
-	// (2) Input files
-	InputArgument 7: $(SolutionDir)\datasets\$(CorpusName)\samples_train.txt 
-	InputArgument 8: $(SolutionDir)\datasets\$(CorpusName)\samples_test.txt 
-	// e.g. $(SolutionDir)datasets\synthetic\samples_train.txt $(SolutionDir)datasets\synthetic\samples_test.txt
-	const char* FILE_alpha_WRITE = argv[9];
-	const char* FILE_beta_WRITE = argv[10];
-	const char* FILE_hi_WRITE = argv[11];
-	// (3) Output files
-	InputArgument 9: FILE_alpha_WRITE denotes the filename for estimated topic marginal distribution
-	InputArgument 10: FILE_beta_WRITE denotes the filename for estimated topic-word probability matrix
-	InputArgument 11: FILE_hi_WRITE denote the estimation of topics per document for the test data. 
-	// The format is:
-	// $(SolutionDir)\datasets\$(CorpusName)\result\alpha.txt 
-	// $(SolutionDir)\datasets\$(CorpusName)\result\beta.txt 	
-	// $(SolutionDir)\datasets\$(CorpusName)\result\hi.txt 
-	// e.g. $(SolutionDir)datasets\synthetic\result\alpha.txt $(SolutionDir)datasets\synthetic\result\beta.txt $(SolutionDir)datasets\synthetic\result\hi.txt
-	//==============================================================================================================================================================
-
-
 #Topic Modeling via Method of Moments
 
-This code performs learning and inference of topic modeles via method of moments using tensor decomposition on a single machine. Specifically the code first performs a pre-processing which implements a whitening transformation for matrix/tensor orthogonalisation and dimensionality reduction and then does "Alternating Least Squares (ALS)".
+This code performs learning and inference of topic modeles via method of moments using tensor decomposition on a single machine. Specifically the code first performs a pre-processing which implements a whitening transformation for matrix/tensor orthogonalisation and dimensionality reduction and then does "Alternating Least Squares (ALS)". A full description of the code can be found [here](http://newport.eecs.uci.edu/anandkumar/Lab/Lab_sub/TopicModeling.html)
 
-Now let us give a sketch of the method of moments approach to learning topic models. We consider the mixed membership (Latent Dirichlet Allocation)topic model. The that hidden topic proportions vector $$\bf{h}\in \Delta^{k}$$ is drawn from a Dirichlet distribution $$\bf{h}\sim \text{Dir}(\alpha_1,\alpha_2,\ldots,\alpha_k)$$, where $$\alpha_0 : = \sum_{i\in[k]} {\alpha_i}$$ is defined as the concentration parameter. $\bf{h}\in \Delta^{k}$, $\bf{h}\sim \text{Dir}(\alpha_1,\alpha_2,\ldots,\alpha_k)$,  $\alpha_0 : = \sum_{i\in[k]} {\alpha_i}$. Here memberships $h$ are not pure but mixed and the concentration parameter $\alpha_0$ controls to what extend the memberships are mixed.
+You can also perform ALS tensor decomposition which is in the M3decomp folder. A full description of the tensor decomposition code can be found [here](http://newport.eecs.uci.edu/anandkumar/Lab/Lab_sub/M3decomp.html).
