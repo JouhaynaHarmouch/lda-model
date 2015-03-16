@@ -1,7 +1,8 @@
+% created by Furong Huang, furongh@uci.edu
 clear;clc;
 %% Data Specs
 n =10000;       % Sample Size
-d =500;         % Vocabulary Size
+d =100;         % Vocabulary Size
 k =3;           % Hidden Dimension
 alpha0 =0.01;   % How mixed the topics are
 n_test = 100;
