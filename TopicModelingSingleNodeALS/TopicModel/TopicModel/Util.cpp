@@ -9,7 +9,6 @@
 *
 * All rights reserved.
 *******************************************************/
-#pragma once
 #include "stdafx.h"
 #include <stdint.h>
 extern double alpha0;
@@ -84,82 +83,84 @@ void gaussian_matrix(unsigned int p,unsigned int k, SparseMatrix<double> & Omega
 }
 
 void accumulate_M_mul_S(SparseMatrix<double> Gx_a, SparseMatrix<double> RandomMat, \
-	SparseMatrix<double> & M2_a, VectorXd & mu_a, VectorXd &Lengths){
-	double nx = (double)Gx_a.rows();
-	double na = (double)Gx_a.cols();
-	VectorXd OnesPseudoA = VectorXd::Ones(na);
-	VectorXd OnesPseudoX = VectorXd::Ones(nx);
-	VectorXd lengths = Gx_a * OnesPseudoA;
-	Lengths = lengths.cwiseMax(3.0*OnesPseudoX);
-
+                        SparseMatrix<double> & M2_a, VectorXd & mu_a, VectorXd &Lengths){
+    double nx = (double)Gx_a.rows();
+    double na = (double)Gx_a.cols();
+    VectorXd OnesPseudoA = VectorXd::Ones(na);
+    VectorXd OnesPseudoX = VectorXd::Ones(nx);
+    VectorXd lengths = Gx_a * OnesPseudoA;
+    Lengths = lengths.cwiseMax(3.0*OnesPseudoX);
+    
 #ifdef NORMALIZE
-	double inv_nx = 1.0 / nx;
-
+    double inv_nx = 1.0 / nx;
+    
 #else
-	double inv_nx = 1.0;
+    double inv_nx = 1.0;
 #endif
-
-	VectorXd lengthSquareInv = Lengths.cwiseProduct(Lengths - OnesPseudoX).cwiseInverse();
-	MatrixXd lengthSquareInvMat = lengthSquareInv.replicate(1, Gx_a.cols());
-	SparseMatrix<double> Gx_aSquareNorm = Gx_a.cwiseProduct(lengthSquareInvMat.sparseView());
-	VectorXd lengthInv = Lengths.cwiseInverse();
-	//1 .  compute M2 Main Term
-	double para_main = inv_nx * (alpha0 + 1);
-	// ct \otimes ct term : 
-	SparseMatrix<double>  sec_ord_mom = Gx_a.transpose() * (Gx_aSquareNorm*RandomMat);
-	// diagonal(ct) term :
-	VectorXd sec_ord_momDiagVec = Gx_aSquareNorm.transpose() * OnesPseudoX;
-	vector<Triplet<double> > triplets_sparse;
-	for (int i = 0; i < sec_ord_momDiagVec.size(); ++i){
-		triplets_sparse.push_back(Triplet<double>(i, i, sec_ord_momDiagVec(i)));
-	}
-	SparseMatrix<double> sec_ord_momDiag(sec_ord_momDiagVec.size(), sec_ord_momDiagVec.size());
-	sec_ord_momDiag.setFromTriplets(triplets_sparse.begin(), triplets_sparse.end());
-
-	SparseMatrix<double> M2 = sec_ord_mom - sec_ord_momDiag*RandomMat; M2 = para_main * M2;
-	//2 .  compute M2 Shift Term
-	double para_shift = alpha0;
-	mu_a = inv_nx * (Gx_a.transpose()* lengthInv);
-	SparseVector<double> mu_a_sparse = mu_a.sparseView();
-
-	SparseMatrix<double> shiftTerm = mu_a_sparse * (mu_a_sparse.transpose()*RandomMat); shiftTerm = para_shift * shiftTerm;
-	M2_a = M2 - shiftTerm;	M2_a.makeCompressed(); M2_a.prune(TOLERANCE);
+    VectorXd lengthSquareInv = Lengths.cwiseProduct(Lengths - OnesPseudoX).cwiseInverse();
+    //	MatrixXd lengthSquareInvMat(lengthSquareInv.size(),Gx_a.cols());
+    MatrixXd lengthSquareInvMat(lengthSquareInv.size(),RandomMat.cols());
+    //	lengthSquareInvMat = lengthSquareInv.replicate(1, Gx_a.cols());
+    lengthSquareInvMat = lengthSquareInv.replicate(1, RandomMat.cols());
+    //	SparseMatrix<double> Gx_aSquareNorm = Gx_a.cwiseProduct(lengthSquareInvMat.sparseView());
+    SparseMatrix<double> Gx_aProjected = Gx_a*RandomMat;
+    SparseMatrix<double> Gx_aSquareNorm = Gx_aProjected.cwiseProduct(lengthSquareInvMat.sparseView());
+    lengthSquareInvMat.resize(0,0);
+    VectorXd lengthInv = Lengths.cwiseInverse();
+    mu_a = inv_nx * (Gx_a.transpose()* lengthInv);
+    //1 .  compute M2 Main Term
+    double para_main = inv_nx * (alpha0 + 1);
+    // ct \otimes ct term :
+    SparseMatrix<double>  sec_ord_mom = Gx_a.transpose() * (Gx_aSquareNorm);
+    // diagonal(ct) term :
+    
+    VectorXd tempvect = OnesPseudoX.cwiseProduct(lengthSquareInv);
+    VectorXd sec_ord_momDiagVec = Gx_a.transpose() * tempvect;
+    vector<Triplet<double> > triplets_sparse;
+    for (int i = 0; i < sec_ord_momDiagVec.size(); ++i){
+        triplets_sparse.push_back(Triplet<double>(i, i, sec_ord_momDiagVec(i)));
+    }
+    SparseMatrix<double> sec_ord_momDiag(sec_ord_momDiagVec.size(), sec_ord_momDiagVec.size());
+    sec_ord_momDiag.setFromTriplets(triplets_sparse.begin(), triplets_sparse.end());
+    SparseMatrix<double> M2 = sec_ord_mom - sec_ord_momDiag*RandomMat; M2 = para_main * M2;
+    //2 .  compute M2 Shift Term
+    double para_shift = alpha0;
+    SparseVector<double> mu_a_sparse = mu_a.sparseView();
+    SparseMatrix<double> shiftTerm = mu_a_sparse * (mu_a_sparse.transpose()*RandomMat); shiftTerm = para_shift * shiftTerm;
+    M2_a = M2 - shiftTerm;	M2_a.makeCompressed(); M2_a.prune(TOLERANCE);
 }
 // set of whitening matrix
 void second_whiten_topic(SparseMatrix<double> Gx_a,  \
-	SparseMatrix<double> &W, VectorXd &mu_a, SparseMatrix<double> &Uw, SparseMatrix<double> &diag_Lw_sqrt_inv_s, VectorXd &Lengths, bool M2_yes, SparseMatrix<double> &input_M2)
+                         SparseMatrix<double> &W, VectorXd &mu_a, SparseMatrix<double> &Uw, SparseMatrix<double> &diag_Lw_sqrt_inv_s, VectorXd &Lengths, bool M2_yes, SparseMatrix<double> &input_M2)
 {
-
-	
-	SparseMatrix<double> RandomMat(Gx_a.cols(), 2 * KHID);	RandomMat.resize(Gx_a.cols(), 2 * KHID);
-	gaussian_matrix((unsigned int) Gx_a.cols(), (unsigned int)2 * KHID, RandomMat);
-	
-	SparseMatrix<double> M2(Gx_a.cols(), 2 * KHID); M2.resize(Gx_a.cols(), 2 * KHID);
-
-	if (!M2_yes) {
-		accumulate_M_mul_S(Gx_a, RandomMat, M2, mu_a, Lengths);
-
-		SparseMatrix<double> Q = orthogonalize_cols((MatrixXd)M2);
-		accumulate_M_mul_S(Gx_a, Q, M2, mu_a, Lengths);
-	}else if(M2_yes) {
-		M2 = input_M2;
-	}
-
-	pair< SparseMatrix<double>, SparseVector<double> > Vw_Lw = SVD_symNystrom_sparse(M2);
-	Uw = Vw_Lw.first.leftCols(KHID);
-	VectorXd Lw = (VectorXd)Vw_Lw.second;
-	Lw = pinv_vector(Lw.head(KHID).cwiseSqrt());
-
-
-	MatrixXd diag_Lw_sqrt_inv = Lw.asDiagonal();
-	diag_Lw_sqrt_inv_s = diag_Lw_sqrt_inv.sparseView();
-	W.resize(Gx_a.cols(), KHID);
-	W = Uw * diag_Lw_sqrt_inv_s;
-
-	W.makeCompressed(); W.prune(TOLERANCE);
-
+    
+    
+    SparseMatrix<double> RandomMat(Gx_a.cols(), 2 * KHID);	RandomMat.resize(Gx_a.cols(), 2 * KHID);
+    gaussian_matrix((unsigned int) Gx_a.cols(), (unsigned int)2 * KHID, RandomMat);
+    SparseMatrix<double> M2(Gx_a.cols(), 2 * KHID); M2.resize(Gx_a.cols(), 2 * KHID);
+    if (!M2_yes) {
+        accumulate_M_mul_S(Gx_a, RandomMat, M2, mu_a, Lengths);
+        
+        SparseMatrix<double> Q = orthogonalize_cols((MatrixXd)M2);
+        accumulate_M_mul_S(Gx_a, Q, M2, mu_a, Lengths);
+    }else if(M2_yes) {
+        M2 = input_M2;
+    }
+    
+    
+    pair< SparseMatrix<double>, SparseVector<double> > Vw_Lw = SVD_symNystrom_sparse(M2);
+    Uw = Vw_Lw.first.leftCols(KHID);
+    VectorXd Lw = (VectorXd)Vw_Lw.second;
+    Lw = pinv_vector(Lw.head(KHID).cwiseSqrt());
+    
+    MatrixXd diag_Lw_sqrt_inv = Lw.asDiagonal();
+    diag_Lw_sqrt_inv_s = diag_Lw_sqrt_inv.sparseView();
+    W.resize(Gx_a.cols(), KHID);
+    W = Uw * diag_Lw_sqrt_inv_s;
+    
+    W.makeCompressed(); W.prune(TOLERANCE);
+    
 }
-
 static int
 isspaceornull(char c)
 {
@@ -271,7 +272,7 @@ void update_mode_oneiteration(MatrixXd rhs, MatrixXd C_old, MatrixXd B_old, Matr
 	
 	A_new = rhs * TobeInvert;
 }
-bool tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
+double tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
     bool fail;
 	MatrixXd A_random(MatrixXd::Random(KHID, KHID)); MatrixXd B_random(MatrixXd::Random(KHID, KHID)); MatrixXd C_random(MatrixXd::Random(KHID, KHID));
     srand( (unsigned)time(NULL) );
@@ -297,7 +298,8 @@ bool tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
             error = (T_est - T).norm() ;// max(T.norm(), TOLERANCE);            
             if (error < 1e-4)
             {
-                cout << "err: " << error << endl;
+//                cout << "err: " << error << endl;
+                A_new = normc(A_new);
                 fail = 0;
                 break;
             }
@@ -324,7 +326,7 @@ bool tensorDecom_batchALS(MatrixXd T, VectorXd & lambda, MatrixXd & A_new){
 		
 		iteration++;
 	}
-    return fail;
+    return error;
 }
 
 void tensorReconstruct(MatrixXd &T, MatrixXd A, MatrixXd B, MatrixXd C,VectorXd lambda){

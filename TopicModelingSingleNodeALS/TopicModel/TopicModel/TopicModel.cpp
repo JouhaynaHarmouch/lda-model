@@ -2,9 +2,8 @@
 // Name        : TopicModel.cpp
 // Type        : main
 // Created by  : Furong Huang on 9/25/13
-// Modified by : Forough Arabshahi on 11/25/14
 // Version     :
-// Copyright   : Copyright (c) 2013 Furong Huang and Forough Arabshahi.
+// Copyright   : Copyright (c) 2013 Furong Huang.
 //               All rights reserved
 // Description : Single Node ALS Topic Modeling
 //============================================================================
@@ -157,20 +156,29 @@ int main(int argc, const char * argv[])
 	VectorXd lambda(KHID);
 	MatrixXd phi_new(KHID, KHID);
 
-	// tensorDecom_alpha0_topic(Data_a_G, Data_a_mu, Lengths, lambda, phi_new);
-    bool fail=1;
+    
+    VectorXd current_lambda(KHID);
+    MatrixXd current_phi(KHID, KHID);
+    double err_min = 1000;double current_err=1000;
     int restart_num = 0;
-    while(fail and restart_num<10){
+    int whichRun = 0;
+    while(restart_num<3){
         cout << "Running ALS " << restart_num << endl;
-        fail = tensorDecom_batchALS(T, lambda, phi_new);
+        current_err = tensorDecom_batchALS(T,current_lambda,current_phi);
+        if(current_err <err_min){
+            cout << "replace current eigenvalue and eigenvectors with this run"<< endl;
+            whichRun = restart_num;
+            lambda = current_lambda;
+            phi_new = current_phi;
+            err_min = current_err;
+        }
         restart_num +=1;
     }
-	cout << "K space eigenvectors: " << endl << phi_new << endl;
-	cout << "K space eigenvalues: " << endl << lambda << endl;
+    cout << "FINAL ERROR (" << whichRun << "-th run)" <<" : " << err_min << endl;
 
 	TIME_end = clock();
 	double time_stpm = double(TIME_end - TIME_start) / CLOCKS_PER_SEC;
-	printf("time taken by whitening = %5.10e (Seconds)\n", time_stpm);
+	printf("time taken by ALS = %5.10e (Seconds)\n", time_stpm);
 
 
 	cout << "(3) Unwhitening-----------" << endl;
