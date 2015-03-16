@@ -1347,7 +1347,7 @@ input.engine_num_input{width:60px}
 .ansiblack{color:#000}
 .ansired{color:#8b0000}
 .ansigreen{color:#006400}
-.ansiyellow{color:#a52a2a}
+.ansiyellow{color:#c4a000}
 .ansiblue{color:#00008b}
 .ansipurple{color:#9400d3}
 .ansicyan{color:#4682b4}
@@ -1593,7 +1593,6 @@ span#checkpoint_status,span#autosave_status{font-size:small}
 .highlight .nv { color: #19177C } /* Name.Variable */
 .highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
 .highlight .w { color: #bbbbbb } /* Text.Whitespace */
-.highlight .mb { color: #666666 } /* Literal.Number.Bin */
 .highlight .mf { color: #666666 } /* Literal.Number.Float */
 .highlight .mh { color: #666666 } /* Literal.Number.Hex */
 .highlight .mi { color: #666666 } /* Literal.Number.Integer */
@@ -1682,10 +1681,12 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This code performs tensor decomposition given the third order moment M3 in the following form:</p>
-<p><span class="math">\(\text{Triplets}_{\alpha_0} := \mathbb{E}[\bf{x}_1 \otimes \bf{x}_2 \otimes \bf{x}_3] \\\)</span> <span class="math">\(-\frac{\alpha_0}{\alpha_0+2}\big( \mathbb{E}[\bf{x}_1 \otimes \bf{x}_2 \otimes \mu] + \mathbb{E}[\bf{x}_1 \otimes \mu \otimes \bf{x}_3] + \mathbb{E}[\mu \otimes \bf{x}_2 \otimes \bf{x}_3] \big) \\\)</span> <span class="math">\(+\frac{2\alpha_0^2}{(\alpha_0+2)(\alpha_0+1)} \mu \otimes \mu \otimes \mu \in \mathbb{R}^{d \times d \times d}\)</span></p>
+<p>$\text{Triplets}_{\alpha_0} := \mathbb{E}[\bf{x}_1 \otimes \bf{x}_2 \otimes \bf{x}_3] \\$
+$-\frac{\alpha_0}{\alpha_0+2}\big( \mathbb{E}[\bf{x}_1 \otimes \bf{x}_2 \otimes \mu] + \mathbb{E}[\bf{x}_1 \otimes \mu \otimes \bf{x}_3] + \mathbb{E}[\mu \otimes \bf{x}_2 \otimes \bf{x}_3] \big) \\$
+$+\frac{2\alpha_0^2}{(\alpha_0+2)(\alpha_0+1)} \mu \otimes \mu \otimes \mu \in \mathbb{R}^{d \times d \times d}$</p>
 <p>where:</p>
-<p><span class="math">\(\mu := \mathbb{E}[\bf{x}_1] \in \mathbb{R}^d\)</span></p>
-<p>The M3 tensor <span class="math">\(\in \mathbb{R}^{k \times k \times k}\)</span> can be represented as a matrix m3 <span class="math">\(\in \mathbb{R}^{k \times k^2}\)</span>. m3 can be written as a <span class="math">\(k \times k\)</span> block matrix in which each <span class="math">\(k \times k\)</span> block represents one slice of M3 with reserved order. The code assumes that M3 is given in m3 format and is written in the sparse matrix representation in a text file.</p>
+<p>$\mu := \mathbb{E}[\bf{x}_1] \in \mathbb{R}^d$</p>
+<p>The M3 tensor $\in \mathbb{R}^{k \times k \times k}$ can be represented as a matrix m3 $\in \mathbb{R}^{k \times k^2}$. m3 can be written as a $k \times k$ block matrix in which each $k \times k$ block represents one slice of M3 with reserved order. The code assumes that M3 is given in m3 format and is written in the sparse matrix representation in a text file.</p>
 <p>Respresenting M3 as m3 is called tensor matricization. for a more detailed description of how this works take a look at section 2.4 of <a href="http://epubs.siam.org/doi/pdf/10.1137/07070111X"> &quot;Tensor Decomposition and Applications&quot; </a> by Tamara G. Kolda and Brett W. Bader. We are considering the mode-1 matricization in our code.</p>
 <p>Note that this code might be slow for large scale M3 since the tensor is directly being input.</p>
 </div>
@@ -1713,9 +1714,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[1]:
-</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class="highlight"><pre>  <span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">megaDataLab</span><span class="nd">@bitbucket.org</span><span class="o">/</span><span class="n">megaDataLab</span><span class="o">/</span><span class="n">tensormethodsforml</span><span class="o">.</span><span class="n">git</span>
@@ -1738,12 +1737,10 @@ In&nbsp;[1]:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[2]:
-</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="n">cd</span> <span class="p">(</span><span class="n">PATH_TO_topicModling</span><span class="p">)</span><span class="o">/</span><span class="n">TopicModelingSingleNodeALS</span><span class="o">/</span><span class="n">TopicModel</span><span class="o">/</span><span class="n">M3decomp</span>
+<div class="highlight"><pre><span class="n">cd</span> <span class="p">(</span><span class="n">PATH_TO_topicModling</span><span class="p">)</span><span class="o">/</span><span class="n">TopicModelingSingleNodeALS</span><span class="o">/</span><span class="n">TopicModel</span><span class="o">/</span><span class="n">TopicModel</span>
 </pre></div>
 
 </div>
@@ -1762,12 +1759,10 @@ In&nbsp;[2]:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[3]:
-</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="n">make</span>
+<div class="highlight"><pre><span class="n">make</span> <span class="n">exe</span><span class="o">-</span><span class="n">tensor</span>
 </pre></div>
 
 </div>
@@ -1785,10 +1780,11 @@ In&nbsp;[3]:
 InputArgument 2: (KHID) is the number of topics you want to learn
 InputArgument 3: (DATATYPE) denotes the index convention. Set it to 1 if the data is compatible with MATLAB (array indexing       starts from 1) and set it to 0 if the data is compatible with C++ (array indexing starts from 0)
 
-InputArgument 4: (outputEigValPATH) denotes the filename/filepath for the eigenvalues
-InputArgument 5: (outputEigVectPATH) denotes the filename/filepath for eigenvectors
+InputArgument 4: (M3_filename) filename/filepath to the third order moment
 
-InputArgument 6: (M3_PATH) Path to the third order moment</code></pre>
+InputArgument 5: (outputEigValPATH) denotes the filename/filepath for the eigenvalues
+InputArgument 6: (outputEigVectPATH) denotes the filename/filepath for eigenvectors
+</code></pre>
 </div>
 </div>
 </div>
@@ -1803,90 +1799,10 @@ InputArgument 6: (M3_PATH) Path to the third order moment</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[6]:
-</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="o">./</span><span class="n">exe</span><span class="o">-</span><span class="n">M3decomp</span> <span class="n">NA</span> <span class="n">KHID</span> <span class="n">DATATYPE</span> <span class="n">outputEigValPath</span> <span class="n">outputEigVectPath</span> <span class="n">M3_PATH</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The code then performs batch Alternating Least Squares to perform tensor decomposition This is done by function tensorDecom_batchALS whose syntax is given below.</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[1]:
-</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class="highlight"><pre><span class="n">void</span> <span class="n">tensorDecom_batchALS</span><span class="p">(</span><span class="n">MatrixXd</span> <span class="n">T</span><span class="p">,</span> <span class="n">VectorXd</span> <span class="o">&amp;</span><span class="k">lambda</span><span class="p">,</span> <span class="n">MatrixXd</span> <span class="o">&amp;</span><span class="n">A_new</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let M3 have the following factorization. The goal of ALS is to perform this tensor decomposition and return <span class="math">\(\bf{A}\)</span> and <span class="math">\(\Lambda\)</span> which is a vector whose entries are the <span class="math">\(\lambda_i\)</span>'s.</p>
-<p><span class="math">\(M3 = \sum_{i \in [k]} \lambda_i \bf{A}_i \otimes \bf{A}_i \otimes \bf{A}_i\)</span></p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The ALS algorithm is a iterative procedure, where in each iteration it updates <span class="math">\(\bf{A}\)</span> using the previous value of <span class="math">\(\bf{A}\)</span>. The update equations are given below (t indicates the iteration index). Note that <span class="math">\(\bf{y}_i\)</span> indicates the whitened version of <span class="math">\(\bf{x}_i\)</span>.</p>
-<p><span class="math">\(\bf{A}^{t+1} \longleftarrow \bf{A}^t + \beta \frac{1}{\vert \bf{X} \vert} \bf{y}_1 \bigg(\bf{y_3} ^\top \bf{A}^t * \bf{y}_2 ^\top \bf{A}^{t} \bigg) \Bigg( \bigg( (\bf{A}^t)^\top \bf{A}^t * (\bf{A}^t)^\top \bf{A}^t \bigg)^\top \Bigg) ^\dagger\)</span></p>
-<p><span class="math">\(\Lambda^{t+1} \longleftarrow \| \bf{A}^{t+1} \| \| \bf{A}^{t+1} \| \| \bf{A}^{t+1} \|\)</span></p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><span class="math">\(\bf{A}\)</span> and <span class="math">\(\Lambda = [\lambda_i] \in \mathbb{R}^k\)</span> will be written in the specified output path and are the desired components of the input tensor.</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let us give an example of a simple matrix decomposition result for the M3 matrix in the results folder called Tsparse.txt. cd into the M3decomp directory and make the executable. Then run the programming by typing the following in the command line:</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">
-In&nbsp;[1]:
-</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class="highlight"><pre><span class="o">./</span><span class="n">exe_M3decomp</span> <span class="mi">3</span> <span class="mi">3</span> <span class="mi">1</span> <span class="n">results</span><span class="o">/</span><span class="n">eigVal</span><span class="o">.</span><span class="n">txt</span> <span class="n">results</span><span class="o">/</span><span class="n">eigVect</span><span class="o">.</span><span class="n">txt</span> <span class="n">results</span><span class="o">/</span><span class="n">Tsparse</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight"><pre><span class="n">make</span> <span class="n">runtensor</span>
 </pre></div>
 
 </div>
@@ -1908,30 +1824,30 @@ In&nbsp;[1]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<ol style="list-style-type: decimal">
-<li><p>Reading data----------------</p>
-<p>reading second order moment</p>
-<p>Exec Time reading matrices before preproc = 0.0000000000e+00 (Seconds)</p></li>
-<li><p>Tensor decomposition----------------</p>
-<p>err: 3.741e-16</p>
-<p>coverged iteration: 100</p></li>
-</ol>
-<p>K space eigenvectors:</p>
-<pre><code> 0.658249  0.505604  0.533547 
+<p>The code then performs batch Alternating Least Squares to perform tensor decomposition for our synthetic example. This is done by function tensorDecom_batchALS whose syntax is given below.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight"><pre><span class="n">void</span> <span class="n">tensorDecom_batchALS</span><span class="p">(</span><span class="n">MatrixXd</span> <span class="n">T</span><span class="p">,</span> <span class="n">VectorXd</span> <span class="o">&amp;</span><span class="k">lambda</span><span class="p">,</span> <span class="n">MatrixXd</span> <span class="o">&amp;</span><span class="n">A_new</span><span class="p">)</span>
+</pre></div>
 
--0.738266  0.308024  0.609462 
+</div>
+</div>
+</div>
 
--0.147215  0.805907 -0.586415 </code></pre>
-<p>K space eigenvalues:</p>
-<pre><code>1.57478 
-
-1.94139 
-
-1.81293 </code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li><p>Writing results----------</p></li>
-<li><p>Program over------------</p></li>
-</ol>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let M3 have the following factorization. The goal of ALS is to perform this tensor decomposition and return $\bf{A}$ and $\Lambda$ which is a vector whose entries are the $\lambda_i$&#39;s.</p>
+<p>$M3 = \sum_{i \in [k]} \lambda_i \bf{A}_i \otimes \bf{A}_i \otimes \bf{A}_i$</p>
 </div>
 </div>
 </div>
@@ -1940,7 +1856,68 @@ In&nbsp;[1]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>_______________________ <span class="math">\(_{Document}\)</span> <span class="math">\(_{prepared}\)</span> <span class="math">\(_{by}\)</span> <span class="math">\(_{Forough}\)</span> <span class="math">\(_{Arabshahi}\)</span> <span class="math">\(_{and}\)</span> <span class="math">\(_{edited}\)</span> <span class="math">\(_{by}\)</span> <span class="math">\(_{Animashree}\)</span> <span class="math">\(_{Anandkumar}\)</span> - <span class="math">\(_{Fall}\)</span> <span class="math">\(_{2014}\)</span> __________________________</p>
+<p>The ALS algorithm is a iterative procedure, where in each iteration it updates $\bf{A}$ using the previous value of $\bf{A}$. The update equations are given below (t indicates the iteration index). Note that $\bf{y}_i$ indicates the whitened version of $\bf{x}_i$.</p>
+<p>$\bf{A}^{t+1} \longleftarrow \bf{A}^t + \beta \frac{1}{\vert \bf{X} \vert} \bf{y}_1 \bigg(\bf{y_3} ^\top \bf{A}^t * \bf{y}_2 ^\top \bf{A}^{t} \bigg) \Bigg( \bigg( (\bf{A}^t)^\top \bf{A}^t * (\bf{A}^t)^\top \bf{A}^t \bigg)^\top \Bigg) ^\dagger$</p>
+<p>$\Lambda^{t+1} \longleftarrow \| \bf{A}^{t+1} \| \| \bf{A}^{t+1} \| \| \bf{A}^{t+1} \|$</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>$\bf{A}$ and $\Lambda = [\lambda_i] \in \mathbb{R}^k$ will be written in the specified output path and are the desired components of the input tensor.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let us give an example of a simple matrix decomposition result for the M3 matrix in the results folder called Tsparse.txt. cd into the M3decomp directory and make the executable. Then run the programming by typing the following in the command line:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>./exe-tensor 3  3  1 ../datasets/synthetic/Tensor.txt  ../datasets/synthetic/result/tensor_eigenvalue.txt  ../datasets/synthetic/result/tensor_eigenvector.txt 
+(1) Reading data----------------
+reading third order moment
+input_tensor: 
+1 0 0 0 0 0 0 0 0
+0 0 0 0 2 0 0 0 0
+0 0 0 0 0 0 0 0 3
+Exec Time reading matrices before preproc = 1.9400000000e-04 (Seconds)
+(2) Tensor decomposition----------------
+Running ALS 0
+replace current eigenvalue and eigenvectors with this run
+Running ALS 1
+Running ALS 2
+FINAL ERROR (0-th run) : 0
+eigenvalues:
+3
+2
+1
+eigenvectors:
+0 0 1
+0 1 0
+1 0 0
+(3) Writing results----------
+(4) Program over------------</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong><strong><strong><strong><strong><em>_</em></strong></strong></strong></strong></strong> $_{Document}$  $_{prepared}$  $_{by}$  $_{Forough}$  $_{Arabshahi}$ $_{and}$ $_{edited}$ $_{by}$ $_{Animashree}$ $_{Anandkumar}$ - $_{Fall}$ $_{2014}$ <strong><strong><strong><strong><strong><strong>__</strong></strong></strong></strong></strong></strong></p>
 </div>
 </div>
 </div>
